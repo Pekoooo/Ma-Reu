@@ -1,3 +1,12 @@
 <resources>
     <string name="app_name">Ma reu</string>
+    <string name="No_Meetings">No Meetings</string>
+    <string name="No_Meetings_Text">No planned meetings. Create a new meeting by tapping the + button.</string>
+    <string name="set_up_time">Set up time</string>
+    <string name="create_meeting">Create meeting</string>
+    <string name="participants">Participants :</string>
+    <!-- TODO: Remove or change this placeholder text -->
+    <string name="hello_blank_fragment">Hello blank fragment</string>
+    <string name="enter_meeting_topic">Enter meeting topic</string>
+    <string name="new_meeting">New Meeting</string>
 </resources>

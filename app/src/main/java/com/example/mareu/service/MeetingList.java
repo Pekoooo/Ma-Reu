@@ -4,22 +4,13 @@ import com.example.mareu.model.Meeting;
 
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.Collections;
 import java.util.List;
 
 public abstract class MeetingList {
 
 
-
-
-    private static List<String> dummyList;
-
-    public static List<Meeting> STATIC_MEETING_LIST = Arrays.asList(
-            new Meeting("Meeting", "10H00", MeetingRoomList.getExistingMeetingRoom().get(1), dummyList),
-            new Meeting("Meeting", "10H00", MeetingRoomList.getExistingMeetingRoom().get(1), dummyList),
-            new Meeting("Meeting", "10H00", MeetingRoomList.getExistingMeetingRoom().get(1), dummyList)
-    );
-
-
+    public static List<Meeting> STATIC_MEETING_LIST = Collections.emptyList();
 
 
     static List<Meeting> getDummyMeetingList() {

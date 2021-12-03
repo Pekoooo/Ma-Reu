@@ -13,7 +13,6 @@ public class Meeting implements Parcelable {
     private List<String> meetingParticipants;
 
 
-
     public Meeting(String meetingTopic, String meetingTime, MeetingRoom meetingRoom, List<String> meetingParticipants) {
 
         this.meetingTopic = meetingTopic;
