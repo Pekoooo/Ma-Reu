@@ -11,14 +11,19 @@ public class Meeting implements Parcelable {
     private String meetingTime;
     private MeetingRoom meetingRoom;
     private List<String> meetingParticipants;
+    private String meetingDate;
 
 
-    public Meeting(String meetingTopic, String meetingTime, MeetingRoom meetingRoom, List<String> meetingParticipants) {
+
+
+    public Meeting(String meetingTopic, String meetingTime, String meetingDate, MeetingRoom meetingRoom, List<String> meetingParticipants) {
 
         this.meetingTopic = meetingTopic;
         this.meetingTime = meetingTime;
+        this.meetingDate = meetingDate;
         this.meetingRoom = meetingRoom;
         this.meetingParticipants = meetingParticipants;
+
 
 
     }
@@ -68,6 +73,14 @@ public class Meeting implements Parcelable {
 
     public void setMeetingTime(String meetingTime) {
         this.meetingTime = meetingTime;
+    }
+
+    public String getMeetingDate() {
+        return meetingDate;
+    }
+
+    public void setMeetingDate(String meetingDate) {
+        this.meetingDate = meetingDate;
     }
 
 

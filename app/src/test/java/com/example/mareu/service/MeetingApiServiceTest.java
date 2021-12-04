@@ -29,7 +29,7 @@ public class MeetingApiServiceTest {
         List<String> meetingParticipants = new ArrayList<>();
         MeetingRoom meetingRoom = MeetingRoomList.getExistingMeetingRoom().get(0);
 
-        Meeting meeting = new Meeting("Topic", "10H00", meetingRoom, meetingParticipants);
+        Meeting meeting = new Meeting("Topic", "10H00", "10/05", meetingRoom, meetingParticipants);
 
         SUT.createMeeting(meeting);
 

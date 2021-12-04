@@ -13,6 +13,7 @@
         android:theme="@style/Theme.MaReu">
         <activity
             android:name=".meeting_list.AddMeetingActivity"
+            android:label="New meeting"
             android:exported="false"
             android:parentActivityName=".meeting_list.ListMeetingActivity"/>
         <activity
