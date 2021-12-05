@@ -28,6 +28,7 @@ public class ListMeetingRecyclerViewAdapter extends RecyclerView.Adapter<Meeting
     private static final int VIEW_TYPE_MEETING_LIST = 1;
 
 
+
     private final List<Meeting> meetings;
     private Context context;
     private OnMeetingClickListener listener;
@@ -48,8 +49,6 @@ public class ListMeetingRecyclerViewAdapter extends RecyclerView.Adapter<Meeting
     @Override
     public MeetingViewHolder onCreateViewHolder(@NonNull ViewGroup parent, int viewType) {
 
-        View v;
-        MeetingViewHolder mhv;
 
         if (viewType == VIEW_TYPE_EMPTY) {
 
@@ -67,22 +66,32 @@ public class ListMeetingRecyclerViewAdapter extends RecyclerView.Adapter<Meeting
 
     }
 
-    // TODO : USE PLACEHOLDER AND DELET SUPPRESSLINT
+
+
+
+
+
     @RequiresApi(api = Build.VERSION_CODES.S)
     @Override
-    public void onBindViewHolder(MeetingViewHolder holder, int position) {
+    public void onBindViewHolder(@NonNull MeetingViewHolder holder, int position) {
 
         int viewType = getItemViewType(position);
 
-        if (viewType == VIEW_TYPE_EMPTY){
+        if (viewType == VIEW_TYPE_EMPTY) {
 
             holder.emptyBinding.textView.setText(R.string.No_Meetings);
             holder.emptyBinding.textView2.setText(R.string.No_Meetings_Text);
 
-        } else if (viewType == VIEW_TYPE_MEETING_LIST){
+        } else if (viewType == VIEW_TYPE_MEETING_LIST) {
+
+
 
             Meeting meeting = meetings.get(position);
-            holder.rowBinding.itemListMeetingInfo.setText(meeting.getMeetingTopic() + " - " + meeting.getMeetingTime() + " - " + meeting.getMeetingRoom().getName());
+
+            String meetingDetail = meeting.getMeetingTopic() + " - " + meeting.getMeetingTime() + " - " + meeting.getMeetingRoom().getName();
+
+
+            holder.rowBinding.itemListMeetingInfo.setText(meetingDetail);
             holder.rowBinding.itemListParticipantsEmail.setText(meeting.getMeetingParticipants().toString().replace("[", "").replace("]", ""));
             Glide.with(holder.rowBinding.itemListImageview.getContext())
                     .load(meeting.getMeetingRoom().getRoomPictureUrl())
@@ -90,11 +99,6 @@ public class ListMeetingRecyclerViewAdapter extends RecyclerView.Adapter<Meeting
                     .into(holder.rowBinding.itemListImageview);
 
         }
-
-
-
-
-
 
 
     }

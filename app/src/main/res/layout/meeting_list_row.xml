@@ -33,6 +33,8 @@
         android:layout_height="wrap_content"
         android:layout_marginStart="24dp"
         android:textSize="11sp"
+        android:maxLines="1"
+        android:text="@string/lorem_ipsum"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintStart_toEndOf="@+id/item_list_imageview"
 
