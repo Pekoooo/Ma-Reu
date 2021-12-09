@@ -1,27 +1,16 @@
 package com.example.mareu.meeting_list;
 
-import androidx.appcompat.app.AppCompatActivity;
-
-import android.app.AlertDialog;
 import android.app.DatePickerDialog;
 import android.app.TimePickerDialog;
-import android.content.Context;
-import android.content.Intent;
 import android.os.Bundle;
-import android.text.Editable;
-import android.text.Spanned;
-import android.text.TextWatcher;
-import android.text.style.ImageSpan;
-import android.util.Log;
-import android.view.KeyEvent;
-import android.view.MenuItem;
 import android.view.View;
+import android.view.WindowManager;
 import android.view.inputmethod.EditorInfo;
 import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
-import android.widget.DatePicker;
-import android.widget.TextView;
 import android.widget.Toast;
+
+import androidx.appcompat.app.AppCompatActivity;
 
 import com.example.mareu.R;
 import com.example.mareu.databinding.ActivityAddMeetingBinding;
@@ -29,18 +18,16 @@ import com.example.mareu.di.DI;
 import com.example.mareu.model.Meeting;
 import com.example.mareu.model.MeetingRoom;
 import com.example.mareu.service.MeetingApiService;
-import com.example.mareu.service.MeetingRoomList;
 import com.google.android.material.chip.Chip;
-import com.google.android.material.chip.ChipDrawable;
 import com.google.android.material.chip.ChipGroup;
 
+import java.text.SimpleDateFormat;
 import java.util.ArrayList;
+import java.util.Calendar;
 import java.util.List;
 import java.util.Locale;
 
 public class AddMeetingActivity extends AppCompatActivity {
-
-    private final String EMAIL_PATTERN = "[a-zA-Z0-9._-]+@[a-z]+\\.+[a-z]+";
 
     private ActivityAddMeetingBinding binding;
     private final List<String> meetingParticipants = new ArrayList<>();
@@ -51,6 +38,7 @@ public class AddMeetingActivity extends AppCompatActivity {
     private int year;
     private int month;
     private int dayOfMonth;
+    String EMAIL_PATTERN = "[a-zA-Z0-9._-]+@[a-z]+\\.+[a-z]+";
 
 
     @Override
@@ -62,11 +50,53 @@ public class AddMeetingActivity extends AppCompatActivity {
 
         mApiService = DI.getMeetingApiService();
 
+        setSpinner();
+        setButtonCreate();
+        setChipConverter();
+        setPopPickers();
+
+
+    }
+
+    private void setPopPickers() {
+        binding.buttonSetupTime.setOnClickListener(v -> popTimePicker());
+
+
+        binding.buttonSetupDate.setOnClickListener(v -> popDatePicker());
+    }
+
+
+    private void setSpinner() {
+
         ArrayAdapter<MeetingRoom> adapter = new ArrayAdapter<>(this, android.R.layout.simple_spinner_item, mApiService.getMeetingRooms());
         adapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
         binding.meetingRoomListSpinner.setAdapter(adapter);
 
+        binding.editText.setOnClickListener(v -> binding.meetingRoomListSpinner.performClick());
 
+
+        binding.meetingRoomListSpinner.setOnItemSelectedListener(new AdapterView.OnItemSelectedListener() {
+
+            @Override
+            public void onItemSelected(AdapterView<?> parent, View view, int position, long id) {
+
+                MeetingRoom selectedMeetingRoom = (MeetingRoom) binding.meetingRoomListSpinner.getSelectedItem();
+
+                binding.editText.setText(selectedMeetingRoom.getName());
+
+
+            }
+
+            @Override
+            public void onNothingSelected(AdapterView<?> parent) {
+
+            }
+        });
+
+
+    }
+
+    private void setButtonCreate() {
         binding.buttonCreateMeeting.setOnClickListener(v -> {
 
 
@@ -76,48 +106,44 @@ public class AddMeetingActivity extends AppCompatActivity {
                 Toast.makeText(this, "Make sure all text fields are filled in", Toast.LENGTH_LONG).show();
 
 
+            } else if (printChipsValue(binding.chipGroup2) == 1) {
+
+                Toast.makeText(this, "Wrong email format", Toast.LENGTH_SHORT).show();
             } else {
-                if (printChipsValue(binding.chipGroup2) == 0) {
+
+                meetingRoom = (MeetingRoom) binding.meetingRoomListSpinner.getSelectedItem();
+
+                Meeting meeting = new Meeting(
+                        binding.meetingTopic.getText().toString(),
+                        binding.buttonSetupTime.getText().toString(),
+                        binding.buttonSetupDate.getText().toString(),
+                        meetingRoom,
+                        meetingParticipants
+
+                );
 
 
-                    meetingRoom = (MeetingRoom) binding.meetingRoomListSpinner.getSelectedItem();
+                mApiService.createMeeting(meeting);
 
-                    Meeting meeting = new Meeting(
-                            binding.meetingTopic.getText().toString(),
-                            binding.buttonSetupTime.getText().toString(), binding.buttonSetupDate.getText().toString(),
-                            meetingRoom,
-                            meetingParticipants
-
-                    );
-
-
-                    mApiService.createMeeting(meeting);
-
-                    Intent intent = new Intent(AddMeetingActivity.this, ListMeetingActivity.class);
-
-                    startActivity(intent);
-
-
-                }
-
+                finish();
 
             }
 
 
         });
+    }
+
+    private void setChipConverter() {
+
+        binding.editTextParticipants.setOnEditorActionListener((TextView, actionId, event) -> {
 
 
-        binding.etValue.setOnEditorActionListener((v, actionId, event) -> {
-
-
-            // TODO Create Chip on space bar input
-
-
-            if (actionId == EditorInfo.IME_ACTION_DONE /* || Spacebar is pressed */) {
-                String chipText = v.getText().toString();
+            if (actionId == EditorInfo.IME_ACTION_DONE) {
+                String chipText = TextView.getText().toString();
                 if (!chipText.isEmpty()) {
                     addChipToGroup(chipText, binding.chipGroup2);
-                    binding.etValue.setText("");
+                    binding.editTextParticipants.setText("");
+                    binding.emptyChipGroupMessage.setText("");
                 }
 
                 return true;
@@ -125,7 +151,6 @@ public class AddMeetingActivity extends AppCompatActivity {
             }
             return false;
         });
-
 
     }
 
@@ -143,12 +168,19 @@ public class AddMeetingActivity extends AppCompatActivity {
 
             chipGroup.removeView(chip);
 
+
             printChipsValue(chipGroup);
+
+            if (chipGroup.getChildCount() == 0) {
+
+                binding.emptyChipGroupMessage.setText(R.string.no_participants);
+            }
 
         });
 
 
     }
+
 
     private int printChipsValue(ChipGroup chipGroup) {
 
@@ -162,9 +194,8 @@ public class AddMeetingActivity extends AppCompatActivity {
                 meetingParticipants.add(email);
             } else {
                 controller = 1;
-                Toast.makeText(this, "bad email format", Toast.LENGTH_SHORT).show();
-            }
 
+            }
 
         }
 
@@ -172,14 +203,15 @@ public class AddMeetingActivity extends AppCompatActivity {
 
     }
 
-
-    public void popDatePicker(View view) {
+    private void popDatePicker() {
 
         DatePickerDialog.OnDateSetListener onDateSetListener = (view1, year, month, dayOfMonth) -> {
 
+
             this.year = year;
-            this.month = month;
+            this.month = month + 1;
             this.dayOfMonth = dayOfMonth;
+
 
             binding.buttonSetupDate.setText(String.format(Locale.getDefault(), "%02d/%02d/%04d", this.dayOfMonth, this.month, this.year));
 
@@ -188,15 +220,16 @@ public class AddMeetingActivity extends AppCompatActivity {
         DatePickerDialog datePickerDialog = new DatePickerDialog(this, onDateSetListener, year, month, dayOfMonth);
         datePickerDialog.setTitle("Select Date");
         datePickerDialog.show();
+
+
     }
 
-
-    public void popTimePicker(View view) {
+    private void popTimePicker() {
 
         TimePickerDialog.OnTimeSetListener onTimeSetListener = (view1, selectedHour, selectedMinute) -> {
             hour = selectedHour;
             minute = selectedMinute;
-            binding.buttonSetupTime.setText(String.format(Locale.getDefault(), "%02d:%02d", hour, minute));
+            binding.buttonSetupTime.setText(String.format(Locale.getDefault(), "%02dh%02d", hour, minute));
 
 
         };

@@ -9,8 +9,8 @@ import com.example.mareu.databinding.MeetingListRowBinding;
 
 public class MeetingViewHolder extends RecyclerView.ViewHolder {
 
-     MeetingListRowBinding rowBinding;
-     MeetingListIsEmptyBinding emptyBinding;
+    MeetingListRowBinding rowBinding;
+    MeetingListIsEmptyBinding emptyBinding;
 
     public MeetingViewHolder(@NonNull MeetingListRowBinding itemBinding, OnMeetingClickListener listener) {
         super(itemBinding.getRoot());

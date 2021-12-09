@@ -9,9 +9,10 @@
         android:id="@+id/textView"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:text="No Meetings"
+        android:text="@string/no_meetings"
         android:textSize="20sp"
         android:textStyle="bold"
+        android:layout_marginBottom="8dp"
         app:layout_constraintBottom_toTopOf="@+id/textView2"
         app:layout_constraintEnd_toEndOf="@+id/textView2"
         app:layout_constraintStart_toStartOf="@+id/textView2" />
@@ -20,7 +21,7 @@
         android:id="@+id/textView2"
         android:layout_width="280dp"
         android:layout_height="wrap_content"
-        android:text="No planned meetings. Create a new meeting by tapping the + button"
+        android:text="@string/no_planned_meeting_message"
         android:textAlignment="center"
         android:textSize="16sp"
         android:layout_marginTop="8dp"
@@ -30,9 +31,9 @@
         app:layout_constraintTop_toTopOf="parent" />
 
     <ImageView
-        android:layout_width="50dp"
-        android:layout_height="50dp"
-        android:src="@drawable/ic_baseline_no_meeting_room_24"
+        android:layout_width="60dp"
+        android:layout_height="60dp"
+        android:src="@drawable/ic_icons8_folder"
         android:layout_marginBottom="16dp"
         app:layout_constraintBottom_toTopOf="@+id/textView"
         app:layout_constraintEnd_toEndOf="parent"

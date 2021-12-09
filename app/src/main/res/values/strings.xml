@@ -10,4 +10,11 @@
     <string name="new_meeting">New Meeting</string>
     <string name="set_up_date">set up date</string>
     <string name="lorem_ipsum">Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat. Duis aute irure dolor in reprehenderit in voluptate velit esse cillum dolore eu fugiat nulla pariatur. Excepteur sint occaecat cupidatat non proident, sunt in culpa qui officia deserunt mollit anim id est laborum.</string>
+    <string name="no_planned_meeting_message">No planned meetings. Create a new meeting by tapping the + button</string>
+    <string name="no_meetings">No Meetings</string>
+    <string name="meeting_topic">Meeting topic</string>
+    <string name="enter_participants_here">Enter participants here</string>
+    <string name="participantsTextView">Participants :</string>
+    <string name="no_participants">Not participants yet</string>
+    <string name="meeting_room">Meeting Room</string>
 </resources>

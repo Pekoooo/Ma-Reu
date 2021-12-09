@@ -23,6 +23,7 @@
         android:layout_marginStart="24dp"
         android:textSize="16sp"
         android:textStyle="bold"
+        android:textColor="#3f445e"
         app:layout_constraintBottom_toTopOf="@+id/item_list_participants_email"
         app:layout_constraintStart_toEndOf="@+id/item_list_imageview"
         app:layout_constraintTop_toTopOf="parent" />
@@ -35,6 +36,7 @@
         android:textSize="11sp"
         android:maxLines="1"
         android:text="@string/lorem_ipsum"
+        android:singleLine="true"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintStart_toEndOf="@+id/item_list_imageview"
 
@@ -51,8 +53,7 @@
         app:layout_constraintBottom_toBottomOf="@+id/item_list_imageview"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintTop_toTopOf="@+id/item_list_imageview"
-
-        />
+        app:tint="#3f445e" />
 
 
 </androidx.constraintlayout.widget.ConstraintLayout>
