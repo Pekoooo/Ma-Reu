@@ -11,9 +11,16 @@ public interface MeetingApiService {
 
     List<Meeting> getMeetings();
 
+    List<Meeting> getMeetingsByRoom();
+
+    List<Meeting> getMeetingsByDate();
+
     void deleteMeeting(Meeting meeting);
 
     void createMeeting(Meeting meeting);
+
+    long generateId();
+
 
 
 }

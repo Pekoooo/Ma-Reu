@@ -18,6 +18,7 @@ public class MeetingViewHolder extends RecyclerView.ViewHolder {
         rowBinding = itemBinding;
 
         rowBinding.itemListDeleteButton.setOnClickListener(v -> {
+
             if (listener != null) {
                 int position = getAdapterPosition();
                 if (position != RecyclerView.NO_POSITION) {

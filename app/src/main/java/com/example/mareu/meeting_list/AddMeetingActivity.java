@@ -1,8 +1,11 @@
 package com.example.mareu.meeting_list;
 
+import static android.content.ContentValues.TAG;
+
 import android.app.DatePickerDialog;
 import android.app.TimePickerDialog;
 import android.os.Bundle;
+import android.util.Log;
 import android.view.View;
 import android.view.WindowManager;
 import android.view.inputmethod.EditorInfo;
@@ -33,6 +36,7 @@ public class AddMeetingActivity extends AppCompatActivity {
     private final List<String> meetingParticipants = new ArrayList<>();
     private MeetingApiService mApiService;
     private MeetingRoom meetingRoom;
+    private long meetingId;
     private int hour;
     private int minute;
     private int year;
@@ -96,6 +100,8 @@ public class AddMeetingActivity extends AppCompatActivity {
 
     }
 
+
+
     private void setButtonCreate() {
         binding.buttonCreateMeeting.setOnClickListener(v -> {
 
@@ -113,12 +119,17 @@ public class AddMeetingActivity extends AppCompatActivity {
 
                 meetingRoom = (MeetingRoom) binding.meetingRoomListSpinner.getSelectedItem();
 
+                meetingId = mApiService.generateId();
+
+                Log.d(TAG, "setButtonCreate: created" + meetingId);
+
+
                 Meeting meeting = new Meeting(
                         binding.meetingTopic.getText().toString(),
                         binding.buttonSetupTime.getText().toString(),
                         binding.buttonSetupDate.getText().toString(),
                         meetingRoom,
-                        meetingParticipants
+                        meetingParticipants, meetingId
 
                 );
 
@@ -166,8 +177,8 @@ public class AddMeetingActivity extends AppCompatActivity {
 
         chip.setOnCloseIconClickListener(v -> {
 
-            chipGroup.removeView(chip);
 
+            chipGroup.removeView(chip);
 
             printChipsValue(chipGroup);
 

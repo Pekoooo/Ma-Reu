@@ -17,4 +17,5 @@
     <string name="participantsTextView">Participants :</string>
     <string name="no_participants">Not participants yet</string>
     <string name="meeting_room">Meeting Room</string>
+    <string name="filter">Filter</string>
 </resources>

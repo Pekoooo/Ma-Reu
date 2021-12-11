@@ -1,6 +1,9 @@
 package com.example.mareu.service;
 
+import static android.content.ContentValues.TAG;
 import static org.junit.Assert.assertTrue;
+
+import android.util.Log;
 
 import com.example.mareu.di.DI;
 import com.example.mareu.model.Meeting;
@@ -29,11 +32,26 @@ public class MeetingApiServiceTest {
         List<String> meetingParticipants = new ArrayList<>();
         MeetingRoom meetingRoom = MeetingRoomList.getExistingMeetingRoom().get(0);
 
-        Meeting meeting = new Meeting("Topic", "10H00", "10/05", meetingRoom, meetingParticipants);
+        Meeting meeting = new Meeting("Topic", "10H00", "10/05", meetingRoom, meetingParticipants, 540);
 
         SUT.createMeeting(meeting);
 
         assertTrue(SUT.getMeetings().contains(meeting));
+
+
+    }
+
+    @Test
+    public void meetingApiService_generateRandomId_withSuccess() {
+
+        List<Long> longNumbers = new ArrayList<>();
+
+        long longToAdd = SUT.generateId();
+
+        longNumbers.add(longToAdd);
+
+
+        assertTrue(longNumbers.contains(longToAdd));
 
 
     }

@@ -11,6 +11,7 @@ public class MeetingRoomList {
 
     public static List<MeetingRoom> EXISTING_MEETING_ROOM = Arrays.asList(
 
+            new MeetingRoom("Select your meeting room", "NoURL", 404, 0, false),
             new MeetingRoom("Link", "https://www.colorbook.io/imagecreator.php?hex=ffc09f&width=1920&height=1080&text=%201920x1080", 1, 10, true),
             new MeetingRoom("Ganon", "https://www.colorhexa.com/ffee93.png", 2, 15, true),
             new MeetingRoom("Zelda", "https://www.colorhexa.com/a0ced9.png", 3, 5, true),

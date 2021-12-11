@@ -1,0 +1,44 @@
+<?xml version="1.0" encoding="utf-8"?>
+<menu xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto">
+
+    <group>
+
+
+
+        <item
+            android:id="@+id/filter_button"
+            android:icon="@drawable/ic_baseline_filter_list_24"
+            app:showAsAction="ifRoom"
+            android:title="@string/filter">
+
+            <menu>
+
+                <item android:id="@+id/filter_by_date"
+                    android:title="Filter by date"
+                    />
+
+                <item android:id="@+id/filter_by_room"
+                    android:title="Filter by room"
+                    />
+
+                <item android:id="@+id/reset_filters"
+                    android:title="Reset filters"
+                    />
+
+
+            </menu>
+
+        </item>
+
+
+    </group>
+
+
+
+
+
+
+
+
+</menu>
