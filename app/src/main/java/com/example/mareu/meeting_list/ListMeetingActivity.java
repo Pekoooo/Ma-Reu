@@ -267,7 +267,26 @@ public class ListMeetingActivity extends AppCompatActivity {
         adapter = new ListMeetingRecyclerViewAdapter(meetings);
         binding.recyclerView.setAdapter(adapter);
 
-        adapter.setOnMeetingClickListener(this::removeItem);
+
+
+        adapter.setOnMeetingClickListener(new OnMeetingClickListener() {
+            @Override
+            public void onDelete(int position) {
+
+                Meeting meetingAtPosition = meetings.get(position);
+
+                long meetingID = meetingAtPosition.getMeetingId();
+
+
+
+
+
+                removeItem(position);
+
+
+
+            }
+        });
 
 
     }
