@@ -23,6 +23,7 @@ import com.example.mareu.model.Meeting;
 import com.example.mareu.model.MeetingRoom;
 import com.example.mareu.service.MeetingApiService;
 
+import java.util.Calendar;
 import java.util.List;
 import java.util.Locale;
 
@@ -33,10 +34,12 @@ public class ListMeetingActivity extends AppCompatActivity {
     private List<Meeting> meetingsByRoom;
     private List<Meeting> meetingsByDate;
     private ListMeetingRecyclerViewAdapter adapter;
-    private int year;
-    private int month;
-    private int dayOfMonth;
 
+    Calendar calendar = Calendar.getInstance();
+
+    int year = calendar.get(Calendar.YEAR);
+    int month = calendar.get(Calendar.MONTH);
+    int dayOfMonth = calendar.get(Calendar.DAY_OF_MONTH);
 
     private ActivityMeetingListBinding binding;
 
@@ -46,6 +49,8 @@ public class ListMeetingActivity extends AppCompatActivity {
         super.onCreate(savedInstanceState);
 
         apiService = DI.getMeetingApiService();
+        meetingsByDate = apiService.getMeetingsByDate();
+        meetingsByRoom = apiService.getMeetingsByRoom();
         setView();
         setSpinner();
 
@@ -80,6 +85,16 @@ public class ListMeetingActivity extends AppCompatActivity {
             case R.id.reset_filters:
                 initList();
 
+                if (meetingsByDate.size() > 0) {
+
+                    meetingsByDate.clear();
+                }
+
+                if (meetingsByRoom.size() > 0) {
+
+                    meetingsByRoom.clear();
+                }
+
                 return true;
         }
         return super.onOptionsItemSelected(item);
@@ -87,7 +102,6 @@ public class ListMeetingActivity extends AppCompatActivity {
 
     private void initFilteredByRoomList() {
 
-        meetingsByRoom = apiService.getMeetingsByRoom();
 
         binding.recyclerView.setHasFixedSize(true);
         RecyclerView.LayoutManager layoutManager = new LinearLayoutManager(this);
@@ -113,22 +127,24 @@ public class ListMeetingActivity extends AppCompatActivity {
 
             }
 
-            private void deleteMeeting(Meeting meetingToDelete) {
 
-                for (int i = 0; i < meetings.size(); i++) {
-
-                    Meeting currentMeeting = meetings.get(i);
-
-                    if (currentMeeting.getMeetingId() == meetingToDelete.getMeetingId()) {
-
-                        meetings.remove(currentMeeting);
-                    }
-
-                }
-            }
         });
 
 
+    }
+
+    private void deleteMeeting(Meeting meetingToDelete) {
+
+        for (int i = 0; i < meetings.size(); i++) {
+
+            Meeting currentMeeting = meetings.get(i);
+
+            if (currentMeeting.getMeetingId() == meetingToDelete.getMeetingId()) {
+
+                meetings.remove(currentMeeting);
+            }
+
+        }
     }
 
     private void filterMeetingsByRoom() {
@@ -190,10 +206,56 @@ public class ListMeetingActivity extends AppCompatActivity {
 
     }
 
+    private void initFilteredByDateList() {
+
+        meetingsByDate = apiService.getMeetingsByDate();
+
+        binding.recyclerView.setHasFixedSize(true);
+        RecyclerView.LayoutManager layoutManager = new LinearLayoutManager(this);
+        binding.recyclerView.setLayoutManager(layoutManager);
+        adapter = new ListMeetingRecyclerViewAdapter(meetingsByDate);
+        binding.recyclerView.setAdapter(adapter);
+
+        adapter.setOnMeetingClickListener(new OnMeetingClickListener() {
+            @Override
+            public void onDelete(int position) {
+
+
+                Meeting meetingToDelete;
+
+                meetingToDelete = meetingsByDate.get(position);
+
+                deleteMeeting(meetingToDelete);
+
+                meetingsByDate.remove(position);
+
+
+                adapter.notifyItemRemoved(position);
+
+            }
+
+
+        });
+
+
+    }
+
 
     private void filterMeetingsByDate() {
 
-        getSelectedDate();
+        String filteredDate = getSelectedDate();
+
+        for (int i = 0; i < meetings.size(); i++) {
+
+            Meeting currentMeeting = meetings.get(i);
+
+            if (currentMeeting.getMeetingDate().matches(filteredDate)) {
+                meetingsByDate.add(currentMeeting);
+            }
+
+        }
+
+        initFilteredByDateList();
 
         // Opens a date dialog view
         // Once date selected, return the date on text format
@@ -202,7 +264,6 @@ public class ListMeetingActivity extends AppCompatActivity {
         // meetinglistbydate.add(i)
 
 
-        meetingsByDate = apiService.getMeetingsByDate();
     }
 
     private String getSelectedDate() {
@@ -233,8 +294,6 @@ public class ListMeetingActivity extends AppCompatActivity {
 
 
     private void removeItem(int position) {
-
-
 
 
         meetings.remove(position);
@@ -268,7 +327,6 @@ public class ListMeetingActivity extends AppCompatActivity {
         binding.recyclerView.setAdapter(adapter);
 
 
-
         adapter.setOnMeetingClickListener(new OnMeetingClickListener() {
             @Override
             public void onDelete(int position) {
@@ -278,11 +336,7 @@ public class ListMeetingActivity extends AppCompatActivity {
                 long meetingID = meetingAtPosition.getMeetingId();
 
 
-
-
-
                 removeItem(position);
-
 
 
             }
