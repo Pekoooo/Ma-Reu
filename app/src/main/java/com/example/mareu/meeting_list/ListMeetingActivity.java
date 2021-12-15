@@ -16,7 +16,6 @@ import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
 import com.example.mareu.R;
-import com.example.mareu.callback.OnMeetingClickListener;
 import com.example.mareu.databinding.ActivityMeetingListBinding;
 import com.example.mareu.di.DI;
 import com.example.mareu.model.Meeting;
@@ -34,7 +33,7 @@ public class ListMeetingActivity extends AppCompatActivity {
     private List<Meeting> meetingsByRoom;
     private List<Meeting> meetingsByDate;
     private ListMeetingRecyclerViewAdapter adapter;
-    private String getDateSet;
+    private String DateSet;
 
     Calendar calendar = Calendar.getInstance();
 
@@ -176,24 +175,25 @@ public class ListMeetingActivity extends AppCompatActivity {
         adapter = new ListMeetingRecyclerViewAdapter(meetingsByRoom);
         binding.recyclerView.setAdapter(adapter);
 
-        adapter.setOnMeetingClickListener(new OnMeetingClickListener() {
-            @Override
-            public void onDelete(int position) {
+        adapter.setOnMeetingClickListener(position -> {
 
 
-                Meeting meetingToDelete;
+            Meeting meetingToDelete;
 
-                meetingToDelete = meetingsByRoom.get(position);
+            meetingToDelete = meetingsByRoom.get(position);
 
-                deleteMeetingWithId(meetingToDelete);
+            deleteMeetingWithId(meetingToDelete);
 
-                meetingsByRoom.remove(position);
+            meetingsByRoom.remove(position);
 
 
-                adapter.notifyItemRemoved(position);
+            adapter.notifyItemRemoved(position);
 
+            if(meetingsByRoom.size() < 1) {
+                initList();
+
+                Toast.makeText(this, "No meetings for this room, filters have been reset" , Toast.LENGTH_LONG).show();
             }
-
 
         });
 
@@ -210,33 +210,26 @@ public class ListMeetingActivity extends AppCompatActivity {
             this.dayOfMonth = dayOfMonth;
 
 
-            getDateSet = String.format(Locale.getDefault(), "%02d/%02d/%04d", this.dayOfMonth, this.month, this.year);
+            DateSet = String.format(Locale.getDefault(), "%02d/%02d/%04d", this.dayOfMonth, this.month, this.year);
 
-            binding.testtext.setText(getDateSet);
+
+            filterMeetingsByDate();
 
 
         };
 
-        DatePickerDialog datePickerDialog = new DatePickerDialog(this, onDateSetListener, year, month - 1, dayOfMonth);
+        DatePickerDialog datePickerDialog = new DatePickerDialog(this, onDateSetListener, year, month, dayOfMonth);
         datePickerDialog.setTitle("Select Date");
         datePickerDialog.show();
-
-        if (!getDateSet.isEmpty()) {
-
-            filterMeetingsByDate();
-
-        }
 
 
     }
 
     private void filterMeetingsByDate() {
 
-
-        final String selectedDate = getDateSet;
+        final String selectedDate = DateSet;
 
         meetingsByDate.clear();
-
 
         for (int i = 0; i < meetings.size(); i++) {
 
@@ -264,24 +257,25 @@ public class ListMeetingActivity extends AppCompatActivity {
         adapter = new ListMeetingRecyclerViewAdapter(meetingsByDate);
         binding.recyclerView.setAdapter(adapter);
 
-        adapter.setOnMeetingClickListener(new OnMeetingClickListener() {
-            @Override
-            public void onDelete(int position) {
+        adapter.setOnMeetingClickListener(position -> {
 
 
-                Meeting meetingToDelete;
+            Meeting meetingToDelete;
 
-                meetingToDelete = meetingsByDate.get(position);
+            meetingToDelete = meetingsByDate.get(position);
 
-                deleteMeetingWithId(meetingToDelete);
+            deleteMeetingWithId(meetingToDelete);
 
-                meetingsByDate.remove(position);
+            meetingsByDate.remove(position);
 
 
-                adapter.notifyItemRemoved(position);
+            adapter.notifyItemRemoved(position);
 
+            if(meetingsByDate.size() < 1) {
+                initList();
+
+                Toast.makeText(this, "No meetings at this date, filters have been reset" , Toast.LENGTH_LONG).show();
             }
-
 
         });
 
@@ -331,24 +325,12 @@ public class ListMeetingActivity extends AppCompatActivity {
         RecyclerView.LayoutManager layoutManager = new LinearLayoutManager(this);
         binding.recyclerView.setLayoutManager(layoutManager);
 
-        // if CONDITION adapter = meedings else if CONDITION adapter = meetingsByRoom else if CONDITION adapter = meetingsByDate
 
         adapter = new ListMeetingRecyclerViewAdapter(meetings);
         binding.recyclerView.setAdapter(adapter);
 
 
-        adapter.setOnMeetingClickListener(new OnMeetingClickListener() {
-            @Override
-            public void onDelete(int position) {
-
-                Meeting meetingAtPosition = meetings.get(position);
-
-
-                removeItem(position);
-
-
-            }
-        });
+        adapter.setOnMeetingClickListener(this::removeItem);
 
 
     }

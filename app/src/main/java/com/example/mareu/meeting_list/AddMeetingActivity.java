@@ -7,7 +7,6 @@ import android.app.TimePickerDialog;
 import android.os.Bundle;
 import android.util.Log;
 import android.view.View;
-import android.view.WindowManager;
 import android.view.inputmethod.EditorInfo;
 import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
@@ -24,7 +23,6 @@ import com.example.mareu.service.MeetingApiService;
 import com.google.android.material.chip.Chip;
 import com.google.android.material.chip.ChipGroup;
 
-import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.List;
@@ -47,6 +45,7 @@ public class AddMeetingActivity extends AppCompatActivity {
     int year = calendar.get(Calendar.YEAR);
     int month = calendar.get(Calendar.MONTH);
     int dayOfMonth = calendar.get(Calendar.DAY_OF_MONTH);
+    private List<Meeting> meetings;
 
 
     @Override
@@ -57,6 +56,7 @@ public class AddMeetingActivity extends AppCompatActivity {
         setContentView(view);
 
         mApiService = DI.getMeetingApiService();
+        meetings = mApiService.getMeetings();
 
         setSpinner();
         setButtonCreate();
@@ -68,7 +68,6 @@ public class AddMeetingActivity extends AppCompatActivity {
 
     private void setPopPickers() {
         binding.buttonSetupTime.setOnClickListener(v -> popTimePicker());
-        // R.ID.MENU. SETONCLICKLISTENER TRIGGER POPTIMEPICKER
 
 
         binding.buttonSetupDate.setOnClickListener(v -> popDatePicker());
@@ -106,7 +105,6 @@ public class AddMeetingActivity extends AppCompatActivity {
     }
 
 
-
     private void setButtonCreate() {
         binding.buttonCreateMeeting.setOnClickListener(v -> {
 
@@ -120,6 +118,11 @@ public class AddMeetingActivity extends AppCompatActivity {
             } else if (printChipsValue(binding.chipGroup2) == 1) {
 
                 Toast.makeText(this, "Wrong email format", Toast.LENGTH_SHORT).show();
+
+            } else if (binding.meetingRoomListSpinner.getSelectedItem().toString().equalsIgnoreCase("select your meeting room")) {
+
+                Toast.makeText(this, "Select your meeting room", Toast.LENGTH_SHORT).show();
+
             } else {
 
                 meetingRoom = (MeetingRoom) binding.meetingRoomListSpinner.getSelectedItem();
@@ -138,15 +141,38 @@ public class AddMeetingActivity extends AppCompatActivity {
 
                 );
 
+                if (checkForDuplicate(meeting)) {
 
-                mApiService.createMeeting(meeting);
+                    Toast.makeText(this, "Meeting not available at this day and hour", Toast.LENGTH_LONG).show();
+                } else {
 
-                finish();
+                    mApiService.createMeeting(meeting);
+
+
+                    finish();
+                }
+
 
             }
 
 
         });
+    }
+
+    private boolean checkForDuplicate(Meeting meeting) {
+
+        for (int i = 0; i < mApiService.getMeetings().size(); i++) {
+
+            Meeting currentMeeting = meetings.get(i);
+
+            if (meeting.getMeetingDate().equalsIgnoreCase(currentMeeting.getMeetingDate()) && meeting.getMeetingTime().equalsIgnoreCase(currentMeeting.getMeetingTime())) {
+
+                return true;
+            }
+
+        }
+
+        return false;
     }
 
     private void setChipConverter() {
@@ -184,6 +210,23 @@ public class AddMeetingActivity extends AppCompatActivity {
 
 
             chipGroup.removeView(chip);
+
+
+
+            for (int i = 0; i < meetingParticipants.size(); i++) {
+
+                String currentChipText = meetingParticipants.get(i);
+
+
+
+                if(chip.getText().toString().matches(currentChipText)){
+
+                    meetingParticipants.remove(i);
+
+                }
+
+
+            }
 
             printChipsValue(chipGroup);
 
@@ -233,7 +276,7 @@ public class AddMeetingActivity extends AppCompatActivity {
 
         };
 
-        DatePickerDialog datePickerDialog = new DatePickerDialog(this, onDateSetListener, year, month -1, dayOfMonth);
+        DatePickerDialog datePickerDialog = new DatePickerDialog(this, onDateSetListener, year, month, dayOfMonth);
         datePickerDialog.setTitle("Select Date");
         datePickerDialog.show();
 
