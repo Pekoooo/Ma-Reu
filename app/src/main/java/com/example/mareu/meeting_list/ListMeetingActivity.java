@@ -34,6 +34,7 @@ public class ListMeetingActivity extends AppCompatActivity {
     private List<Meeting> meetingsByRoom;
     private List<Meeting> meetingsByDate;
     private ListMeetingRecyclerViewAdapter adapter;
+    private String getDateSet;
 
     Calendar calendar = Calendar.getInstance();
 
@@ -63,6 +64,22 @@ public class ListMeetingActivity extends AppCompatActivity {
 
     }
 
+
+    private void setView() {
+        binding = ActivityMeetingListBinding.inflate(getLayoutInflater());
+        View view = binding.getRoot();
+        setContentView(view);
+    }
+
+    private void setSpinner() {
+
+        ArrayAdapter<MeetingRoom> adapter = new ArrayAdapter<>(this, android.R.layout.simple_spinner_item, apiService.getMeetingRooms());
+        adapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
+        binding.meetingRoomListSpinner.setAdapter(adapter);
+
+
+    }
+
     @Override
     public boolean onCreateOptionsMenu(Menu menu) {
         getMenuInflater().inflate(R.menu.main_menu, menu);
@@ -73,79 +90,33 @@ public class ListMeetingActivity extends AppCompatActivity {
     public boolean onOptionsItemSelected(@NonNull MenuItem item) {
         switch (item.getItemId()) {
             case R.id.filter_by_date:
-                filterMeetingsByDate();
+
+                getSelectedDate();
 
                 return true;
             case R.id.filter_by_room:
+
 
                 filterMeetingsByRoom();
                 initFilteredByRoomList();
 
                 return true;
             case R.id.reset_filters:
+
                 initList();
 
-                if (meetingsByDate.size() > 0) {
 
-                    meetingsByDate.clear();
-                }
+                meetingsByDate.clear();
 
-                if (meetingsByRoom.size() > 0) {
 
-                    meetingsByRoom.clear();
-                }
+                meetingsByRoom.clear();
+
 
                 return true;
         }
         return super.onOptionsItemSelected(item);
     }
 
-    private void initFilteredByRoomList() {
-
-
-        binding.recyclerView.setHasFixedSize(true);
-        RecyclerView.LayoutManager layoutManager = new LinearLayoutManager(this);
-        binding.recyclerView.setLayoutManager(layoutManager);
-        adapter = new ListMeetingRecyclerViewAdapter(meetingsByRoom);
-        binding.recyclerView.setAdapter(adapter);
-
-        adapter.setOnMeetingClickListener(new OnMeetingClickListener() {
-            @Override
-            public void onDelete(int position) {
-
-
-                Meeting meetingToDelete;
-
-                meetingToDelete = meetingsByRoom.get(position);
-
-                deleteMeeting(meetingToDelete);
-
-                meetingsByRoom.remove(position);
-
-
-                adapter.notifyItemRemoved(position);
-
-            }
-
-
-        });
-
-
-    }
-
-    private void deleteMeeting(Meeting meetingToDelete) {
-
-        for (int i = 0; i < meetings.size(); i++) {
-
-            Meeting currentMeeting = meetings.get(i);
-
-            if (currentMeeting.getMeetingId() == meetingToDelete.getMeetingId()) {
-
-                meetings.remove(currentMeeting);
-            }
-
-        }
-    }
 
     private void filterMeetingsByRoom() {
 
@@ -197,18 +168,95 @@ public class ListMeetingActivity extends AppCompatActivity {
 
     }
 
-    private void setSpinner() {
+    private void initFilteredByRoomList() {
 
-        ArrayAdapter<MeetingRoom> adapter = new ArrayAdapter<>(this, android.R.layout.simple_spinner_item, apiService.getMeetingRooms());
-        adapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
-        binding.meetingRoomListSpinner.setAdapter(adapter);
+        binding.recyclerView.setHasFixedSize(true);
+        RecyclerView.LayoutManager layoutManager = new LinearLayoutManager(this);
+        binding.recyclerView.setLayoutManager(layoutManager);
+        adapter = new ListMeetingRecyclerViewAdapter(meetingsByRoom);
+        binding.recyclerView.setAdapter(adapter);
+
+        adapter.setOnMeetingClickListener(new OnMeetingClickListener() {
+            @Override
+            public void onDelete(int position) {
+
+
+                Meeting meetingToDelete;
+
+                meetingToDelete = meetingsByRoom.get(position);
+
+                deleteMeetingWithId(meetingToDelete);
+
+                meetingsByRoom.remove(position);
+
+
+                adapter.notifyItemRemoved(position);
+
+            }
+
+
+        });
 
 
     }
 
+    private void getSelectedDate() {
+
+        DatePickerDialog.OnDateSetListener onDateSetListener = (view, year, month, dayOfMonth) -> {
+
+
+            this.year = year;
+            this.month = month + 1;
+            this.dayOfMonth = dayOfMonth;
+
+
+            getDateSet = String.format(Locale.getDefault(), "%02d/%02d/%04d", this.dayOfMonth, this.month, this.year);
+
+            binding.testtext.setText(getDateSet);
+
+
+        };
+
+        DatePickerDialog datePickerDialog = new DatePickerDialog(this, onDateSetListener, year, month - 1, dayOfMonth);
+        datePickerDialog.setTitle("Select Date");
+        datePickerDialog.show();
+
+        if (!getDateSet.isEmpty()) {
+
+            filterMeetingsByDate();
+
+        }
+
+
+    }
+
+    private void filterMeetingsByDate() {
+
+
+        final String selectedDate = getDateSet;
+
+        meetingsByDate.clear();
+
+
+        for (int i = 0; i < meetings.size(); i++) {
+
+            Meeting currentMeeting = meetings.get(i);
+
+            if (currentMeeting.getMeetingDate().matches(selectedDate)) {
+                meetingsByDate.add(currentMeeting);
+            }
+
+
+        }
+
+        initFilteredByDateList();
+
+
+    }
+
+
     private void initFilteredByDateList() {
 
-        meetingsByDate = apiService.getMeetingsByDate();
 
         binding.recyclerView.setHasFixedSize(true);
         RecyclerView.LayoutManager layoutManager = new LinearLayoutManager(this);
@@ -225,7 +273,7 @@ public class ListMeetingActivity extends AppCompatActivity {
 
                 meetingToDelete = meetingsByDate.get(position);
 
-                deleteMeeting(meetingToDelete);
+                deleteMeetingWithId(meetingToDelete);
 
                 meetingsByDate.remove(position);
 
@@ -237,59 +285,21 @@ public class ListMeetingActivity extends AppCompatActivity {
 
         });
 
-
     }
 
 
-    private void filterMeetingsByDate() {
-
-        String filteredDate = getSelectedDate();
+    private void deleteMeetingWithId(Meeting meetingToDelete) {
 
         for (int i = 0; i < meetings.size(); i++) {
 
             Meeting currentMeeting = meetings.get(i);
 
-            if (currentMeeting.getMeetingDate().matches(filteredDate)) {
-                meetingsByDate.add(currentMeeting);
+            if (currentMeeting.getMeetingId() == meetingToDelete.getMeetingId()) {
+
+                meetings.remove(currentMeeting);
             }
 
         }
-
-        initFilteredByDateList();
-
-        // Opens a date dialog view
-        // Once date selected, return the date on text format
-        // With text format loop through apiservice.getmeetinglist
-        // if getmeetinglist.get(i).getMeetingtime == text returned by date dialog
-        // meetinglistbydate.add(i)
-
-
-    }
-
-    private String getSelectedDate() {
-
-        DatePickerDialog.OnDateSetListener onDateSetListener = (view, year, month, dayOfMonth) -> {
-
-
-            this.year = year;
-            this.month = month + 1;
-            this.dayOfMonth = dayOfMonth;
-
-
-        };
-
-        DatePickerDialog datePickerDialog = new DatePickerDialog(this, onDateSetListener, year, month, dayOfMonth);
-        datePickerDialog.show();
-
-        return String.format(Locale.getDefault(), "%02d/%02d/%04d", this.dayOfMonth, this.month, this.year);
-
-
-    }
-
-    private void setView() {
-        binding = ActivityMeetingListBinding.inflate(getLayoutInflater());
-        View view = binding.getRoot();
-        setContentView(view);
     }
 
 
@@ -332,8 +342,6 @@ public class ListMeetingActivity extends AppCompatActivity {
             public void onDelete(int position) {
 
                 Meeting meetingAtPosition = meetings.get(position);
-
-                long meetingID = meetingAtPosition.getMeetingId();
 
 
                 removeItem(position);

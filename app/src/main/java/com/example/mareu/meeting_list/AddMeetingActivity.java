@@ -39,10 +39,14 @@ public class AddMeetingActivity extends AppCompatActivity {
     private long meetingId;
     private int hour;
     private int minute;
-    private int year;
-    private int month;
-    private int dayOfMonth;
+
     String EMAIL_PATTERN = "[a-zA-Z0-9._-]+@[a-z]+\\.+[a-z]+";
+
+    Calendar calendar = Calendar.getInstance();
+
+    int year = calendar.get(Calendar.YEAR);
+    int month = calendar.get(Calendar.MONTH);
+    int dayOfMonth = calendar.get(Calendar.DAY_OF_MONTH);
 
 
     @Override
@@ -64,6 +68,7 @@ public class AddMeetingActivity extends AppCompatActivity {
 
     private void setPopPickers() {
         binding.buttonSetupTime.setOnClickListener(v -> popTimePicker());
+        // R.ID.MENU. SETONCLICKLISTENER TRIGGER POPTIMEPICKER
 
 
         binding.buttonSetupDate.setOnClickListener(v -> popDatePicker());
@@ -228,7 +233,7 @@ public class AddMeetingActivity extends AppCompatActivity {
 
         };
 
-        DatePickerDialog datePickerDialog = new DatePickerDialog(this, onDateSetListener, year, month, dayOfMonth);
+        DatePickerDialog datePickerDialog = new DatePickerDialog(this, onDateSetListener, year, month -1, dayOfMonth);
         datePickerDialog.setTitle("Select Date");
         datePickerDialog.show();
 
