@@ -1,5 +1,12 @@
 package com.example.mareu.service;
 
+import android.widget.Toast;
+
+import androidx.recyclerview.widget.LinearLayoutManager;
+import androidx.recyclerview.widget.RecyclerView;
+
+import com.example.mareu.meeting_list.ListMeetingActivity;
+import com.example.mareu.meeting_list.ListMeetingRecyclerViewAdapter;
 import com.example.mareu.model.Meeting;
 import com.example.mareu.model.MeetingRoom;
 import java.util.ArrayList;
@@ -43,16 +50,37 @@ public class DummyMeetingApiService implements MeetingApiService {
     }
 
     @Override
-    public long generateId() {
-        Random random = new Random();
+    public void deleteMeetingFromFilteredList(int position, List<Meeting> filteredMeetings) {
+        Meeting meetingToDelete;
 
-        long upperbound = 1000;
+        meetingToDelete = filteredMeetings.get(position);
 
-        long long_random = random.nextLong();
+        deleteMeetingWithId(meetingToDelete);
+
+        filteredMeetings.remove(position);
 
 
-        return upperbound + long_random;
     }
+
+
+
+
+    @Override
+    public void deleteMeetingWithId(Meeting meetingToDelete) {
+
+        for (int i = 0; i < meetings.size(); i++) {
+
+            Meeting currentMeeting = meetings.get(i);
+
+            if (currentMeeting.getMeetingId().equals(meetingToDelete.getMeetingId())) {
+
+                meetings.remove(currentMeeting);
+            }
+
+        }
+
+    }
+
 
     @Override
     public void deleteMeeting(Meeting meeting) {

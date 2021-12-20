@@ -1,6 +1,7 @@
 package com.example.mareu.meeting_list;
 
 import android.app.DatePickerDialog;
+import android.content.Context;
 import android.content.Intent;
 import android.os.Bundle;
 import android.view.Menu;
@@ -34,6 +35,7 @@ public class ListMeetingActivity extends AppCompatActivity {
     private List<Meeting> meetingsByDate;
     private ListMeetingRecyclerViewAdapter adapter;
     private String DateSet;
+    private Context context;
 
     Calendar calendar = Calendar.getInstance();
 
@@ -97,19 +99,14 @@ public class ListMeetingActivity extends AppCompatActivity {
 
 
                 filterMeetingsByRoom();
-                initFilteredByRoomList();
+                initFilteredList(meetingsByRoom);
 
                 return true;
             case R.id.reset_filters:
 
                 initList();
-
-
                 meetingsByDate.clear();
-
-
                 meetingsByRoom.clear();
-
 
                 return true;
         }
@@ -128,12 +125,9 @@ public class ListMeetingActivity extends AppCompatActivity {
             @Override
             public void onItemSelected(AdapterView<?> parent, View view, int position, long id) {
 
-
                 final String selectedMeetingRoom = binding.meetingRoomListSpinner.getSelectedItem().toString();
 
-
                 meetingsByRoom.clear();
-
 
                 for (int i = 0; i < meetings.size(); i++) {
 
@@ -144,18 +138,17 @@ public class ListMeetingActivity extends AppCompatActivity {
                         meetingsByRoom.add(currentMeeting);
 
                     }
-
                 }
 
-                initFilteredByRoomList();
+                initFilteredList(meetingsByRoom);
 
                 if (meetingsByRoom.size() == 0) {
-
 
                     Toast.makeText(ListMeetingActivity.this, "No meetings planned for this room", Toast.LENGTH_SHORT).show();
                 }
 
             }
+
 
             @Override
             public void onNothingSelected(AdapterView<?> parent) {
@@ -167,61 +160,48 @@ public class ListMeetingActivity extends AppCompatActivity {
 
     }
 
-    private void initFilteredByRoomList() {
+    private void initFilteredList(List<Meeting> filteredList) {
 
         binding.recyclerView.setHasFixedSize(true);
         RecyclerView.LayoutManager layoutManager = new LinearLayoutManager(this);
         binding.recyclerView.setLayoutManager(layoutManager);
-        adapter = new ListMeetingRecyclerViewAdapter(meetingsByRoom);
+        adapter = new ListMeetingRecyclerViewAdapter(filteredList);
         binding.recyclerView.setAdapter(adapter);
 
         adapter.setOnMeetingClickListener(position -> {
 
-
-            Meeting meetingToDelete;
-
-            meetingToDelete = meetingsByRoom.get(position);
-
-            deleteMeetingWithId(meetingToDelete);
-
-            meetingsByRoom.remove(position);
-
+            apiService.deleteMeetingFromFilteredList(position, filteredList);
 
             adapter.notifyItemRemoved(position);
 
-            if(meetingsByRoom.size() < 1) {
+            if (filteredList.size() < 1) {
                 initList();
 
-                Toast.makeText(this, "No meetings for this room, filters have been reset" , Toast.LENGTH_LONG).show();
+                Toast.makeText(this, "No meetings for this room, filters have been reset", Toast.LENGTH_LONG).show();
             }
 
         });
 
-
     }
+
 
     private void getSelectedDate() {
 
         DatePickerDialog.OnDateSetListener onDateSetListener = (view, year, month, dayOfMonth) -> {
 
-
             this.year = year;
-            this.month = month + 1;
+            this.month = month;
             this.dayOfMonth = dayOfMonth;
 
-
-            DateSet = String.format(Locale.getDefault(), "%02d/%02d/%04d", this.dayOfMonth, this.month, this.year);
-
+            DateSet = String.format(Locale.getDefault(), "%02d/%02d/%04d", this.dayOfMonth, month + 1, this.year);
 
             filterMeetingsByDate();
-
 
         };
 
         DatePickerDialog datePickerDialog = new DatePickerDialog(this, onDateSetListener, year, month, dayOfMonth);
         datePickerDialog.setTitle("Select Date");
         datePickerDialog.show();
-
 
     }
 
@@ -238,98 +218,34 @@ public class ListMeetingActivity extends AppCompatActivity {
             if (currentMeeting.getMeetingDate().matches(selectedDate)) {
                 meetingsByDate.add(currentMeeting);
             }
-
-
         }
 
-        initFilteredByDateList();
+        initFilteredList(meetingsByDate);
 
-
-    }
-
-
-    private void initFilteredByDateList() {
-
-
-        binding.recyclerView.setHasFixedSize(true);
-        RecyclerView.LayoutManager layoutManager = new LinearLayoutManager(this);
-        binding.recyclerView.setLayoutManager(layoutManager);
-        adapter = new ListMeetingRecyclerViewAdapter(meetingsByDate);
-        binding.recyclerView.setAdapter(adapter);
-
-        adapter.setOnMeetingClickListener(position -> {
-
-
-            Meeting meetingToDelete;
-
-            meetingToDelete = meetingsByDate.get(position);
-
-            deleteMeetingWithId(meetingToDelete);
-
-            meetingsByDate.remove(position);
-
-
-            adapter.notifyItemRemoved(position);
-
-            if(meetingsByDate.size() < 1) {
-                initList();
-
-                Toast.makeText(this, "No meetings at this date, filters have been reset" , Toast.LENGTH_LONG).show();
-            }
-
-        });
-
-    }
-
-
-    private void deleteMeetingWithId(Meeting meetingToDelete) {
-
-        for (int i = 0; i < meetings.size(); i++) {
-
-            Meeting currentMeeting = meetings.get(i);
-
-            if (currentMeeting.getMeetingId() == meetingToDelete.getMeetingId()) {
-
-                meetings.remove(currentMeeting);
-            }
-
-        }
     }
 
 
     private void removeItem(int position) {
 
-
         meetings.remove(position);
         adapter.notifyItemRemoved(position);
 
-
     }
-
 
     @Override
     protected void onResume() {
         super.onResume();
         initList();
 
-
     }
 
     private void initList() {
-
-        //TODO SWITCH CASE TO INIT EITHER meetings / meetingsByRoom / meetingsByDate
-
         meetings = apiService.getMeetings();
-
         binding.recyclerView.setHasFixedSize(true);
         RecyclerView.LayoutManager layoutManager = new LinearLayoutManager(this);
         binding.recyclerView.setLayoutManager(layoutManager);
-
-
         adapter = new ListMeetingRecyclerViewAdapter(meetings);
         binding.recyclerView.setAdapter(adapter);
-
-
         adapter.setOnMeetingClickListener(this::removeItem);
 
 

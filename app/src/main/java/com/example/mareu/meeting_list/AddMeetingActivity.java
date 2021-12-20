@@ -27,6 +27,7 @@ import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.List;
 import java.util.Locale;
+import java.util.UUID;
 
 public class AddMeetingActivity extends AppCompatActivity {
 
@@ -34,7 +35,7 @@ public class AddMeetingActivity extends AppCompatActivity {
     private final List<String> meetingParticipants = new ArrayList<>();
     private MeetingApiService mApiService;
     private MeetingRoom meetingRoom;
-    private long meetingId;
+    private String meetingId;
     private int hour;
     private int minute;
 
@@ -112,6 +113,7 @@ public class AddMeetingActivity extends AppCompatActivity {
             if (binding.meetingTopic.getText().toString().isEmpty() || binding.buttonSetupTime.getText().toString().equalsIgnoreCase("set up time")
                     || binding.buttonSetupDate.getText().toString().equalsIgnoreCase("set up date")) {
 
+
                 Toast.makeText(this, "Make sure all text fields are filled in", Toast.LENGTH_LONG).show();
 
 
@@ -127,17 +129,14 @@ public class AddMeetingActivity extends AppCompatActivity {
 
                 meetingRoom = (MeetingRoom) binding.meetingRoomListSpinner.getSelectedItem();
 
-                meetingId = mApiService.generateId();
-
-                Log.d(TAG, "setButtonCreate: created" + meetingId);
-
+                meetingId = UUID.randomUUID().toString();
 
                 Meeting meeting = new Meeting(
                         binding.meetingTopic.getText().toString(),
                         binding.buttonSetupTime.getText().toString(),
                         binding.buttonSetupDate.getText().toString(),
                         meetingRoom,
-                        meetingParticipants, meetingId
+                        getParticipants(), meetingId
 
                 );
 
@@ -148,13 +147,10 @@ public class AddMeetingActivity extends AppCompatActivity {
 
                     mApiService.createMeeting(meeting);
 
-
                     finish();
                 }
 
-
             }
-
 
         });
     }
@@ -212,19 +208,16 @@ public class AddMeetingActivity extends AppCompatActivity {
             chipGroup.removeView(chip);
 
 
-
             for (int i = 0; i < meetingParticipants.size(); i++) {
 
                 String currentChipText = meetingParticipants.get(i);
 
 
-
-                if(chip.getText().toString().matches(currentChipText)){
+                if (chip.getText().toString().matches(currentChipText)) {
 
                     meetingParticipants.remove(i);
 
                 }
-
 
             }
 
@@ -249,16 +242,33 @@ public class AddMeetingActivity extends AppCompatActivity {
 
             String email = ((Chip) chipGroup.getChildAt(i)).getText().toString();
 
-            if (email.matches(EMAIL_PATTERN)) {
-                meetingParticipants.add(email);
-            } else {
+            if (!email.matches(EMAIL_PATTERN)) {
                 controller = 1;
-
             }
 
         }
 
         return controller;
+
+    }
+
+    private List<String> getParticipants() {
+
+        meetingParticipants.clear();
+
+        for (int i = 0; i < binding.chipGroup2.getChildCount(); i++) {
+
+            String email = ((Chip) binding.chipGroup2.getChildAt(i)).getText().toString();
+
+            if (email.matches(EMAIL_PATTERN)) {
+
+                meetingParticipants.add(email);
+
+            }
+
+        }
+
+        return meetingParticipants;
 
     }
 
@@ -268,18 +278,17 @@ public class AddMeetingActivity extends AppCompatActivity {
 
 
             this.year = year;
-            this.month = month + 1;
+            this.month = month;
             this.dayOfMonth = dayOfMonth;
 
 
-            binding.buttonSetupDate.setText(String.format(Locale.getDefault(), "%02d/%02d/%04d", this.dayOfMonth, this.month, this.year));
+            binding.buttonSetupDate.setText(String.format(Locale.getDefault(), "%02d/%02d/%04d", this.dayOfMonth, month + 1, this.year));
 
         };
 
         DatePickerDialog datePickerDialog = new DatePickerDialog(this, onDateSetListener, year, month, dayOfMonth);
         datePickerDialog.setTitle("Select Date");
         datePickerDialog.show();
-
 
     }
 
@@ -290,9 +299,7 @@ public class AddMeetingActivity extends AppCompatActivity {
             minute = selectedMinute;
             binding.buttonSetupTime.setText(String.format(Locale.getDefault(), "%02dh%02d", hour, minute));
 
-
         };
-
 
         TimePickerDialog timePickerDialog = new TimePickerDialog(this, onTimeSetListener, hour, minute, true);
         timePickerDialog.setTitle("Select Time");

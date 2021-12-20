@@ -19,7 +19,12 @@ public interface MeetingApiService {
 
     void createMeeting(Meeting meeting);
 
-    long generateId();
+    void deleteMeetingFromFilteredList(int position, List<Meeting> filteredMeetings);
+
+    void deleteMeetingWithId(Meeting meetingToDelete);
+
+
+
 
 
 

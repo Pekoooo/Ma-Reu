@@ -18,4 +18,5 @@
     <string name="no_participants">Not participants yet</string>
     <string name="meeting_room">Meeting Room</string>
     <string name="filter">Filter</string>
+    <string name="error_message_text_input_not_filled_in">Make sure all text fields are filled in</string>
 </resources>
