@@ -34,7 +34,7 @@ public class ListMeetingActivity extends AppCompatActivity {
     private List<Meeting> meetingsByRoom;
     private List<Meeting> meetingsByDate;
     private ListMeetingRecyclerViewAdapter adapter;
-    private String DateSet;
+    private String dateSet;
     private Context context;
 
     Calendar calendar = Calendar.getInstance();
@@ -193,7 +193,7 @@ public class ListMeetingActivity extends AppCompatActivity {
             this.month = month;
             this.dayOfMonth = dayOfMonth;
 
-            DateSet = String.format(Locale.getDefault(), "%02d/%02d/%04d", this.dayOfMonth, month + 1, this.year);
+            dateSet = String.format(Locale.getDefault(), "%02d/%02d/%04d", this.dayOfMonth, month + 1, this.year);
 
             filterMeetingsByDate();
 
@@ -207,7 +207,7 @@ public class ListMeetingActivity extends AppCompatActivity {
 
     private void filterMeetingsByDate() {
 
-        final String selectedDate = DateSet;
+        final String selectedDate = dateSet;
 
         meetingsByDate.clear();
 
@@ -221,6 +221,11 @@ public class ListMeetingActivity extends AppCompatActivity {
         }
 
         initFilteredList(meetingsByDate);
+
+        if (meetingsByDate.size() == 0) {
+
+            Toast.makeText(ListMeetingActivity.this, "No meetings planned for this Date", Toast.LENGTH_SHORT).show();
+        }
 
     }
 

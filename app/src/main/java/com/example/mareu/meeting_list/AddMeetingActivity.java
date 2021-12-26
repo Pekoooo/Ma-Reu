@@ -161,7 +161,8 @@ public class AddMeetingActivity extends AppCompatActivity {
 
             Meeting currentMeeting = meetings.get(i);
 
-            if (meeting.getMeetingDate().equalsIgnoreCase(currentMeeting.getMeetingDate()) && meeting.getMeetingTime().equalsIgnoreCase(currentMeeting.getMeetingTime())) {
+            if (meeting.getMeetingDate().equalsIgnoreCase(currentMeeting.getMeetingDate()) &&
+                    meeting.getMeetingTime().equalsIgnoreCase(currentMeeting.getMeetingTime())) {
 
                 return true;
             }

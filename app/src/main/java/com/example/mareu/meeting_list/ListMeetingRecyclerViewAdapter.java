@@ -56,7 +56,7 @@ public class ListMeetingRecyclerViewAdapter extends RecyclerView.Adapter<Meeting
 
     }
 
-    // Required for getItemViewType
+
     @Override
     public void onBindViewHolder(@NonNull MeetingViewHolder holder, int position) {
 
