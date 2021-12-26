@@ -6,7 +6,9 @@ Necessary instructions in order to compile and execute the code :
 
 - Download and install Android Studio.
 
-- Download the app by copying the following link in your web browser https://github.com/Pekoooo/OCR_Projet_4/archive/refs/heads/master.zip  
+- Download the app by clicking or copying the following link in your web browser :
+
+  https://github.com/Pekoooo/OCR_Projet_4/archive/refs/heads/master.zip  
 
 - Unzip the downloaded file in C:\Users\admin\AndroidStudioProjects
 
